@@ -32,19 +32,6 @@ headers = {"User-Agent": agent}
 base = "https://www.songlyrics.com/"
 
 
-def lyrics(artist=None, path=None, url=None):
-    """
-    `artist` argument should be artist name (spaces or dashes separation OK)
-    `path` argument should be songlyrics track path (eg. /blinding-lights-lyrics)
-    Returns: lyric text from songlyrics.com of requested song
-    """
-    if url is None:
-        url = base + artist.replace(" ", "-") + path
-    request = requests.get(url, headers=headers)
-    soup = BeautifulSoup(request.content, "html.parser")
-    return soup.find("p", {"id": "songLyricsDiv"}).text
-
-
 def _clean(lyrics):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
@@ -52,6 +39,46 @@ def _clean(lyrics):
     Returns: provided lyrics shifted to lowercase with punctuation removed
     """
     return lyrics.translate(str.maketrans("", "", string.punctuation)).lower()
+
+
+def artist(artist=None, url=None):
+    """
+    `artist` argument should be artist name (spaces or dashes separation OK)
+    `url`, if provided, will ignore artist and path and query URL directly
+    Returns: JSON-style dict containing genre and album information
+    """
+    if url is None:
+        url = base + artist.replace(" ", "-") + "-lyrics"
+    albums = album(url)
+
+
+def album(artist=None, album=None, url=None):
+    """
+    `artist` argument should be artist name (spaces or dashes separation OK)
+    `album` argument should be album name (spaces or dashes separation OK)
+    `url`, if provided, will ignore artist and path and query URL directly
+    Returns: set of songlyrics.com track URLs from requested album
+    """
+    if url is None:
+        url = base + artist.replace(" ", "-") + "/" + album.replace(" ", "-")
+    request = requests.get(url, headers=headers)
+    soup = BeautifulSoup(request.content, "html.parser")
+    tags = soup.find("table", class_="tracklist").find_all(href=True)
+    return {a["href"] for a in tags}
+
+
+def lyrics(artist=None, path=None, url=None):
+    """
+    `artist` argument should be artist name (spaces or dashes separation OK)
+    `path` argument should be songlyrics track path (eg. /blinding-lights-lyrics)
+    `url`, if provided, will ignore artist and path and query URL directly
+    Returns: lyric text from songlyrics.com of requested song
+    """
+    if url is None:
+        url = base + artist.replace(" ", "-") + path
+    request = requests.get(url, headers=headers)
+    soup = BeautifulSoup(request.content, "html.parser")
+    return soup.find("p", {"id": "songLyricsDiv"}).text
 
 
 def words(lyrics):
