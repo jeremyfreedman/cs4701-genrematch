@@ -23,6 +23,7 @@
 from bs4 import BeautifulSoup
 from collections import defaultdict
 import requests
+import string
 import json
 
 agent = "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) \
@@ -31,40 +32,55 @@ headers = {"User-Agent": agent}
 base = "https://www.songlyrics.com/"
 
 
-def lyrics(artist, path):
+def lyrics(artist=None, path=None, url=None):
     """
-    `artist` argument should be artist name (spaces OK, ideally dashes)
+    `artist` argument should be artist name (spaces or dashes separation OK)
     `path` argument should be songlyrics track path (eg. /blinding-lights-lyrics)
     Returns: lyric text from songlyrics.com of requested song
     """
-    url = base + artist.replace(" ", "-") + path
+    if url is None:
+        url = base + artist.replace(" ", "-") + path
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
     return soup.find("p", {"id": "songLyricsDiv"}).text
+
+
+def _clean(lyrics):
+    """
+    `lyrics`: a string containing song lyrics (presumably separated by spaces
+    and newlines)
+    Returns: provided lyrics shifted to lowercase with punctuation removed
+    """
+    return lyrics.translate(str.maketrans("", "", string.punctuation)).lower()
 
 
 def words(lyrics):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
     and newlines)
+    Returns: original lyrics cleaned (see `_clean()`), split by space/newline,
+    moved into a set (such that each word occurs only once)
     """
-    return set(lyrics.split())
+    return set(_clean(lyrics).split())
 
 
 def lines(lyrics):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
     and newlines)
+    Returns: unique, cleaned lines from provided lyrics
     """
-    return set(lyrics.split("\n"))
+    return set(_clean(lyrics).split("\n"))
 
 
-def words_popularity(lyrics):
+def words_freq(lyrics):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
     and newlines)
+    Returns: a dictionary mapping the frequency of each word's occurrence in
+    the cleaned lyrics
     """
     d = defaultdict(lambda: 0)
-    for word in lyrics.split():
+    for word in _clean(lyrics).split():
         d[word] += 1
     return dict(d)
