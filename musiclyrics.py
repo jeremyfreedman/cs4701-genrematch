@@ -45,11 +45,22 @@ def artist(artist=None, url=None):
     """
     `artist` argument should be artist name (spaces or dashes separation OK)
     `url`, if provided, will ignore artist and path and query URL directly
-    Returns: JSON-style dict containing genre and album information
+    Returns: JSON-style dict containing genre and song URLs
+    This function grabs every song under the artist's profile, so there will
+    be lots of "duplicates" (live recordings, remasters, etc). Specify an
+    album with `album()` below to get more concise results.
     """
     if url is None:
         url = base + artist.replace(" ", "-") + "-lyrics"
-    albums = album(url)
+    ret = {}
+    request = requests.get(url, headers=headers)
+    soup = BeautifulSoup(request.content, "html.parser")
+    genre = soup.find("div", class_="pagetitle").p.a.text
+    tags = soup.find("table", class_="tracklist").find_all(href=True)
+    ret["artist"] = artist
+    ret["genre"] = genre
+    ret["tracks"] = list({a["href"] for a in tags})
+    return ret
 
 
 def album(artist=None, album=None, url=None):
