@@ -51,7 +51,7 @@ def artist(artist=None, url=None):
     album with `album()` below to get more concise results.
     """
     if url is None:
-        url = base + artist.replace(" ", "-") + "-lyrics"
+        url = base + artist.replace(" ", "-").lower() + "-lyrics"
     ret = {}
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
@@ -71,7 +71,7 @@ def album(artist=None, album=None, url=None):
     Returns: set of songlyrics.com track URLs from requested album
     """
     if url is None:
-        url = base + artist.replace(" ", "-") + "/" + album.replace(" ", "-")
+        url = base + artist.replace(" ", "-").lower() + "/" + album.replace(" ", "-")
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
     tags = soup.find("table", class_="tracklist").find_all(href=True)
@@ -86,7 +86,7 @@ def lyrics(artist=None, path=None, url=None):
     Returns: lyric text from songlyrics.com of requested song
     """
     if url is None:
-        url = base + artist.replace(" ", "-") + path
+        url = base + artist.replace(" ", "-").lower() + path
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
     return soup.find("p", {"id": "songLyricsDiv"}).text
