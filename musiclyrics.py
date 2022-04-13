@@ -54,7 +54,7 @@ def artist(artist=None, url=None):
     This function grabs every song under the artist's profile, so there will
     be lots of "duplicates" (live recordings, remasters, etc). Specify an
     album with `album()` below to get more concise results.
-    Genre may be None if MusicLyrics doesn't report one.
+    Genre may be None if SongLyrics doesn't report one.
     """
     if url is None:
         url = base + artist.replace(" ", "-").lower() + "-lyrics"
