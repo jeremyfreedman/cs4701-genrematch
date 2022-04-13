@@ -36,9 +36,14 @@ def _clean(lyrics):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
     and newlines)
-    Returns: provided lyrics shifted to lowercase with punctuation removed
+    Returns: provided lyrics shifted to lowercase with punctuation and CRLF
+    removed
     """
-    return lyrics.translate(str.maketrans("", "", string.punctuation)).lower()
+    return (
+        lyrics.translate(str.maketrans("", "", string.punctuation))
+        .lower()
+        .replace("\r", "")
+    )
 
 
 def artist(artist=None, url=None):
@@ -49,13 +54,16 @@ def artist(artist=None, url=None):
     This function grabs every song under the artist's profile, so there will
     be lots of "duplicates" (live recordings, remasters, etc). Specify an
     album with `album()` below to get more concise results.
+    Genre may be None if MusicLyrics doesn't report one.
     """
     if url is None:
         url = base + artist.replace(" ", "-").lower() + "-lyrics"
     ret = {}
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
-    genre = soup.find("div", class_="pagetitle").p.a.text
+    genre = soup.find("div", class_="pagetitle")
+    if genre is not None:
+        genre = genre.p.a.text
     tags = soup.find("table", class_="tracklist").find_all(href=True)
     ret["artist"] = artist
     ret["genre"] = genre
@@ -78,15 +86,21 @@ def album(artist=None, album=None, url=None):
     return {a["href"] for a in tags}
 
 
-def lyrics(artist=None, path=None, url=None):
+def lyrics(artist=None, title=None, url=None):
     """
     `artist` argument should be artist name (spaces or dashes separation OK)
-    `path` argument should be songlyrics track path (eg. /blinding-lights-lyrics)
-    `url`, if provided, will ignore artist and path and query URL directly
+    `title` argument should be track title (spaces or dashes separation OK)
+    `url`, if provided, will ignore artist and title and query URL directly
     Returns: lyric text from songlyrics.com of requested song
     """
     if url is None:
-        url = base + artist.replace(" ", "-").lower() + path
+        url = (
+            base
+            + artist.replace(" ", "-").lower()
+            + "/"
+            + title.replace(" ", "-").lower()
+            + "-lyrics"
+        )
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
     return soup.find("p", {"id": "songLyricsDiv"}).text
