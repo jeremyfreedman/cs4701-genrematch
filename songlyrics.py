@@ -46,7 +46,7 @@ def _clean(lyrics):
     )
 
 
-def artist(artist=None, url=None):
+def artist(artist=None, cnt=None, url=None):
     """
     `artist` argument should be artist name (spaces or dashes separation OK)
     `url`, if provided, will ignore artist and path and query URL directly
@@ -67,7 +67,9 @@ def artist(artist=None, url=None):
     tags = soup.find("table", class_="tracklist").find_all(href=True)
     ret["artist"] = artist
     ret["genre"] = genre
-    ret["tracks"] = list({a["href"] for a in tags})
+    ret["tracks"] = [a["href"] for a in tags]
+    if cnt is not None:
+        ret["tracks"] = ret["tracks"][:cnt]
     return ret
 
 
