@@ -62,7 +62,7 @@ def artist(artist=None, cnt=None, url=None):
     request = requests.get(url, headers=headers)
     soup = BeautifulSoup(request.content, "html.parser")
     genre = soup.find("div", class_="pagetitle")
-    if genre is not None:
+    if genre is not None and genre.p is not None:
         genre = genre.p.a.text
     tags = soup.find("table", class_="tracklist").find_all(href=True)
     ret["artist"] = artist
