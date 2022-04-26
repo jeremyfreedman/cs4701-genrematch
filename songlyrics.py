@@ -24,8 +24,6 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 import requests
 import string
-from nltk.corpus import stopwords
-from nltk.tokenize import sent_tokenize, word_tokenize
 import json
 
 agent = "Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) \
@@ -110,14 +108,16 @@ def lyrics(artist=None, title=None, url=None):
     return soup.find("p", {"id": "songLyricsDiv"}).text
 
 
-def words(lyrics):
+def words(lyrics, stopwords):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
     and newlines)
+    `stopwords`: a list of stopwords to skip
     Returns: original lyrics cleaned (see `_clean()`), split by space/newline,
     moved into a set (such that each word occurs only once)
     """
-    return set(_clean(lyrics).split())
+    return list(filter(lambda word:\
+                       word not in stopwords, set(_clean(lyrics).split())))
 
 
 def lines(lyrics):
@@ -129,14 +129,16 @@ def lines(lyrics):
     return set(_clean(lyrics).split("\n"))
 
 
-def words_freq(lyrics):
+def words_freq(lyrics, stopwords):
     """
     `lyrics`: a string containing song lyrics (presumably separated by spaces
     and newlines)
+    `stopwords`: a list of stopwords to skip
     Returns: a dictionary mapping the frequency of each word's occurrence in
     the cleaned lyrics
     """
     d = defaultdict(lambda: 0)
     for word in _clean(lyrics).split():
-        d[word] += 1
+        if word not in stopwords:
+            d[word] += 1
     return dict(d)
