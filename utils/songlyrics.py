@@ -116,8 +116,7 @@ def words(lyrics, stopwords):
     Returns: original lyrics cleaned (see `_clean()`), split by space/newline,
     moved into a set (such that each word occurs only once)
     """
-    return list(filter(lambda word:\
-                       word not in stopwords, set(_clean(lyrics).split())))
+    return list(filter(lambda word: word not in stopwords, set(_clean(lyrics).split())))
 
 
 def lines(lyrics):
