@@ -11,8 +11,7 @@ import numpy as np
 
 
 def parse_input(lyr):
-    x = lyr.find("\n")
-    song = sl._clean(lyr[x + 1 :])
+    song = sl._clean(lyr)
     song = song.encode("ascii", "ignore").decode()
     return list(filter(lambda x: x != "", song.split(" ")))
 
@@ -68,20 +67,20 @@ if __name__ == "__main__":
     word_dict, uniq_wordict, cnt = run()
     while True:
         print("\n> What next?")
-        print("> [A]nother song\n> [S]ee the data\n> [E]xit")
+        print("[A]nother song\n[S]ee the data\n[E]xit\n> ", end="")
         cmd = input()
         if cmd.upper() == "A":
             word_dict, uniq_wordict, cnt = run()
         if cmd.upper() == "S":
-            print(f"> Your song had \033[1m{cnt}\033[0m unique words.")
-            print(f"> The top 10 signatures were:")
+            print(f"| Your song had \033[1m{cnt}\033[0m unique words.")
+            print(f"| The top 10 signatures were:")
             print(
-                f">> {list(map(lambda x: x[0], sorted(uniq_wordict.items(), key=lambda x: x[1], reverse=True)[:10]))}"
+                f"|- {list(map(lambda x: x[0], sorted(uniq_wordict.items(), key=lambda x: x[1], reverse=True)[:10]))}"
             )
-            print(f"> Their respective weights were:")
+            print(f"| Their respective weights were:")
             print(
-                f">> {list(map(lambda x: round(x[1], 2), sorted(uniq_wordict.items(), key=lambda x: x[1], reverse=True)[:10]))}"
+                f"|- {list(map(lambda x: round(x[1], 2), sorted(uniq_wordict.items(), key=lambda x: x[1], reverse=True)[:10]))}"
             )
         if cmd.upper() == "E":
-            print("> Goodbye! :-)")
+            print("Goodbye! :-)")
             exit(0)
