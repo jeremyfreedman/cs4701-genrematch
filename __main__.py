@@ -71,7 +71,7 @@ if __name__ == "__main__":
         print("> [A]nother song\n> [S]ee the data\n> [E]xit")
         cmd = input()
         if cmd.upper() == "A":
-            word_dict, uniq_wordict = run()
+            word_dict, uniq_wordict, cnt = run()
         if cmd.upper() == "S":
             print(f"> Your song had \033[1m{cnt}\033[0m unique words.")
             print(f"> The top 10 signatures were:")
