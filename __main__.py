@@ -26,7 +26,7 @@ def run():
     print(f"> You chose {models[mdl][0]}")
     with open(models[mdl][1], "rb") as f:
         clf = pickle.load(f)
-    with open("data/word_appearance_cnt.txt") as f:
+    with open("data/words.txt") as f:
         word_appearance_cnt = f.readlines()
     word_appearance_cnt = ast.literal_eval(word_appearance_cnt[0])
     song_cnt = word_appearance_cnt["SONG_CNT"]
@@ -40,7 +40,7 @@ def run():
     try:  # run until CTRL+D pressed
         while True:
             lyrics_arr.append(input())
-            if lyrics_arr[-2:] == ["", ""]:
+            if lyrics_arr[-3:] == ["", "", ""]:
                 break
     except EOFError:
         pass
@@ -53,9 +53,9 @@ def run():
     for w in words:  # tf-idf
         uniq_wordict[w] = word_dict[w] * math.log(song_cnt / word_appearance_cnt[w])
     print(
-        f"> This sounds like {clf.predict(np.array(list(uniq_wordict.values()) + [len(set(lyrics_parsed))]).reshape(1,-1))[0]}!"
+        f"> This sounds like \033[1m{clf.predict(np.array(list(uniq_wordict.values()) + [len(set(lyrics_parsed))]).reshape(1,-1))[0]}\033[0m!"
     )
-    return (word_dict, uniq_wordict)
+    return (word_dict, uniq_wordict, len(set(lyrics_parsed)))
 
 
 if __name__ == "__main__":
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     print(
         "\n\n\n\n\nWelcome to GenreMatch!\nBy Jeremy Freedman, Reza Madhavan, and Kunal Sheth\n"
     )
-    word_dict, uniq_wordict = run()
+    word_dict, uniq_wordict, cnt = run()
     while True:
         print("\n> What next?")
         print("> [A]nother song\n> [S]ee the data\n> [E]xit")
@@ -73,9 +73,7 @@ if __name__ == "__main__":
         if cmd.upper() == "A":
             word_dict, uniq_wordict = run()
         if cmd.upper() == "S":
-            print(
-                f"> Your song had \033[1m{len(list(filter(lambda x: word_dict[x] != 0, word_dict.keys())))}\033[0m unique words."
-            )
+            print(f"> Your song had \033[1m{cnt}\033[0m unique words.")
             print(f"> The top 10 signatures were:")
             print(
                 f">> {list(map(lambda x: x[0], sorted(uniq_wordict.items(), key=lambda x: x[1], reverse=True)[:10]))}"
