@@ -9,6 +9,8 @@ import pickle
 import utils.songlyrics as sl
 import numpy as np
 
+# populate with (<model name>, <pickle filename>)
+models = [("Decision Tree Classifier", "model_dtc.pkl"), ("Neural Network", "model_nn.pkl"), ("K-Nearest Neighbors", "model_knn.pkl")]
 
 def parse_input(lyr):
     song = sl._clean(lyr)
@@ -60,7 +62,6 @@ def run():
 if __name__ == "__main__":
     os.system("cls" if os.name == "nt" else "clear")
 
-    models = [("Decision Tree Classifier", "model_dtc.pkl")]
     print(
         "\n\n\n\n\nWelcome to GenreMatch!\nBy Jeremy Freedman, Reza Madhavan, and Kunal Sheth\n"
     )
@@ -81,6 +82,6 @@ if __name__ == "__main__":
             print(
                 f"|- {list(map(lambda x: round(x[1], 2), sorted(uniq_wordict.items(), key=lambda x: x[1], reverse=True)[:10]))}"
             )
-        if cmd.upper() == "E":
+        if cmd.upper() == "E" or cmd.upper() == "Q":
             print("Goodbye! :-)")
             exit(0)
