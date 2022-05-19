@@ -10,7 +10,7 @@ import utils.songlyrics as sl
 import numpy as np
 
 # populate with (<model name>, <pickle filename>)
-models = [("Decision Tree Classifier", "model_dtc.pkl"), ("Neural Network", "model_nn.pkl"), ("K-Nearest Neighbors", "model_knn.pkl")]
+models = [("Decision Tree Classifier", "model_dtc.pkl"), ("Gaussian Naive Bayes", "model_nb.pkl"), ("K-Nearest Neighbors", "model_knn.pkl")]
 
 def parse_input(lyr):
     song = sl._clean(lyr)
